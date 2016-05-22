@@ -1,0 +1,212 @@
+# 전체 시스템 데이터베이스
+ptj_list = []       # 알바몬에 등록된 알바들
+member_list = []    # 알바몬에 가입한 회원들(개인, 기업 포함)
+personal_list = []  # 알바몬에 가입한 개인 회원들
+comp_list = []      # 알바몬에 가입한 기업 회원들
+
+
+# 알바 객체 클래스
+class PartTimeJob:
+    # 생성자 : 이름, 급여, 급여의 종류, 알바 종류, 구인 인원, 구하는 회사, 상세 설명, 조건, 지역
+    def __init__(self, name, pay, pay_method, job_kind, people_amount, company, job_detail, needs, area):
+        self.name = name
+        self.pay = pay
+        self.pay_method = pay_method
+        self.job_kind = job_kind
+        self.people_amount = people_amount
+        self.company = company
+        self.job_detail = job_detail
+        self.needs = needs
+        self.area = area
+
+    # 알바 정보 조회
+    def __str__(self):
+        return self.name + " : " + self.company + "\n" + self.job_kind + ", " + \
+                self.area + "에서 " + str(self.people_amount) + "명 모집 중\n" + self.pay_method + " " + str(self.pay) + "원 지급\n" + \
+                self.needs + "\n" + \
+                "상세 모집 요강 : " + self.job_detail + "\n"
+
+# 회원 객체 클래스
+class Member:
+    # 생성자 : 아이디, 비밀번호, 이메일
+    def __init__(self, id, password, email):
+        self.id = id
+        self.password = password
+        self.email = email
+
+# 개인 회원 객체 클래스
+class Personal_Member:
+    # 생성자 : 아이디, 비밀번호, 이메일, 이름, 개인 정보, 지역
+    def __init__(self, id, password, email, name, persona, area):
+        # 회원 클래스 상속
+        Member.__init__(self, id, password, email)
+        self.name = name
+        self.persona = persona
+        self.area = area
+        self.stared_comp = []
+        personal_list.append(self)
+
+    # 정보 조회
+    def __str__(self):
+        msg = self.name + " 회원님(" + self.id + ", " + self.email + ", " + self.area + ")\n" + \
+                self.persona + "\n관심 기업 : "
+        for i in self.stared_comp:
+            msg += i.comp_name + ", "
+        msg = msg[0:len(msg) - 2] + "\n"
+        return msg
+
+    # 알바 지원하기
+    def attend(self, parttime_job):
+        print("[+] " + self.name + "님이 \"" + parttime_job.name + "\"에 지원합니다.\n")
+
+    # 관심 기업 설정하기
+    def star_comp(self, company):
+        self.stared_comp.append(company)
+        print("[+] " + self.name + "님이 \"" + company.comp_name + "\"을(를) 관심 기업으로 설정하였습니다.\n")
+
+    # 관심 기업 해제하기
+    def unstar_comp(self, company):
+        self.stared_comp.remove(company)
+        print("[-] " + self.name + "님이 \"" + company.comp_name + "\"을(를) 관심 기업에서 삭제하였습니다.\n")
+
+# 기업 회원 객체 클래스
+class Company_Member:
+    # 생성자 : 아이디, 비밀번호, 이메일, 회사명, 사업자등록번호, 연락처
+    def __init__(self, id, password, email, comp_name, comp_num, contact):
+        # 회원 클래스 상속
+        Member.__init__(self, id, password, email)
+        self.comp_name = comp_name
+        self.comp_num = comp_num
+        self.contact = contact
+        self.comp_work = "사업 내용입니다."  # 사업 내용
+        self.stared_person = []              # 관심 인재
+        self.added_ptj = []                  # 추가한 알바
+        comp_list.append(self)
+
+    # 정보 조회
+    def __str__(self):
+        msg = self.comp_name + "\n사업자 등록 번호 : " + self.comp_num + "\n연락처 : " + self.contact + "\n추가한 알바 : "
+        if len(self.added_ptj) == 0:
+            msg += "없음"
+        else:
+            for i in self.added_ptj:
+                msg += i.name + ", "
+            msg = msg[0:len(msg) - 2]
+        msg += "\n관심 인재 : "
+        if len(self.stared_person) == 0 :
+            msg += "없음"
+        else:
+            for i in self.stared_person:
+                msg += i.name + ", "
+            msg = msg[0:len(msg) - 2]
+        return msg + "\n"
+
+    # 알바 추가
+    def add_ptj(self, ptj):
+        self.added_ptj.append(ptj)
+        ptj_list.append(ptj)
+        print("[+] \"" + ptj.name + "\"이(가) 알바몬에 게시되었습니다.\n")
+
+    # 알바 삭제
+    def del_ptj(self, ptj):
+        self.added_ptj.remove(ptj)
+        ptj_list.remove(ptj)
+        print("[-] \"" + ptj.name + "\"이(가) 알바 목록에서 삭제되었습니다.\n")
+
+    # 관심 인재 추가
+    def star_person(self, person):
+        self.stared_person.append(person)
+        print("[+] " + person.name + "이(가) 관심 인재에 추가되었습니다.\n")
+
+    # 관심 인재 삭제
+    def unstar_person(self, person):
+        self.stared_person.remove(person)
+        print("[-] " + person.name + "이(가) 관심 인재에서 삭제되었습니다.\n")
+
+class SearchSystem:
+    at = 182.139474
+    lo = 47.493718
+
+    def __init__(self, member):
+        self.member = member
+
+    def search_by_needs(self):
+        print("[+] " + self.member.persona + "에 맞는 알바를 검색합니다.")
+        result = []
+        for i in ptj_list:
+            if i.needs == self.member.persona:
+                result.append(i)
+        print("[+] " + str(len(result)) + "개의 알바가 검색되었습니다 :")
+        for i in result:
+            print(i.name)
+        print()
+
+    def search_by_area(self):
+        print("[+] " + self.member.area + " 주변의 알바를 검색합니다.")
+        result = []
+        for i in ptj_list:
+            if i.area == self.member.area:
+                result.append(i)
+        print("[+] " + str(len(result)) + "개의 알바가 검색되었습니다 :")
+        for i in result:
+            print(i.name)
+        print()
+
+    def search_albamap(self, at, lo):
+        print("[+] 현재 위치를 기준으로 알바를 검색합니다.")
+        print("[*] 위도 : " + str(at) + ", 경도 : " + str(lo))
+        print("* PC + Python 상에서 구현 불가 *\n")
+
+# 홍기훈 회원 등록
+홍기훈 = Personal_Member("sampleid", "samplepassword", "sample@email.com", "홍기훈", "21세, 고졸, 남자", "성북구")
+
+# 홍기훈 회원 정보 조회
+print(홍기훈)
+
+# GS25 기업 회원 등록
+GS25 = Company_Member("compid", "comppassword", "comp@comp.com", "GS25", "200-10-12345", "02-123-4567")
+
+# GS25 기업 정보 조회
+print(GS25)
+
+# GS25 야간 알바 만들기
+GS25야간알바 = PartTimeJob("GS25 야간 알바 모집", "6050", "시급", "편의점 야간 근무", 2, "GS25", "GS25 국민대학교점에서 야간 알바 2명을 구하고 있습니다.", "21세, 고졸, 남자", "성북구")
+
+# 알바 정보 조회
+print(GS25야간알바)
+
+# 야간 알바 정보 알바몬에 올리기
+GS25.add_ptj(GS25야간알바)
+
+# GS25 기업 정보 조회 : 추가한 알바가 반영됨
+print(GS25)
+
+# 홍기훈을 GS25가 관심 인재로 지정함
+GS25.star_person(홍기훈)
+
+# GS25 기업 정보 조회 : 추가한 관심 인재가 반영됨
+print(GS25)
+
+# 홍기훈이 GS25를 관심 기업으로 지정함
+홍기훈.star_comp(GS25)
+
+# 홍기훈 회원 정보 조회 : 추가한 관심 기업이 반영됨
+print(홍기훈)
+
+# 홍기훈이 GS25 야간 알바에 지원함
+홍기훈.attend(GS25야간알바)
+
+# 홍기훈 회원 정보 조회 : 지원한 알바가 반영됨
+print(홍기훈)
+
+# 검색 시스템 가동 : 홍기훈을 기준으로
+system = SearchSystem(홍기훈)
+
+# 홍기훈의 개인 정보를 바탕으로 알바를 조회함
+system.search_by_needs()
+
+# 홍기훈의 지역(성북구)를 바탕으로 알바를 조회함
+system.search_by_area()
+
+# 현재 위치를 바탕으로 알바를 조회함
+system.search_albamap(system.at, system.lo)
