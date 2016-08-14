@@ -10,6 +10,9 @@
 팀원
 -----
 홍기훈
+
 홍자현
-홍승환(harrydrippin @ Github)
+
+홍승환([harrydrippin @ Github](http://github.com/harrydrippin))
 황수진
+
