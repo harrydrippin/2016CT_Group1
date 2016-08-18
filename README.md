@@ -9,11 +9,11 @@
 
 팀원
 -----
-홍기훈
+홍기훈([GiHunHong @ Github](http://github/GiHunHong))
 
-홍자현
+홍자현([ddj04078 @ Github](http://github.com/ddj04078))
 
 홍승환([harrydrippin @ Github](http://github.com/harrydrippin))
 
-황수진
+황수진([HSOOJ @ Github](http://github.com/HSOOJ))
 
